@@ -23,9 +23,13 @@ class ControleurConnexion{
     public function pageConnexion(){
         include("vues/v_connexion.html");
     }
+
     public function espaceClient($mail){
         $lesInfos= $this->modeleConnexion->getAllInformationCompte($mail);
+        $lesCommandes=$this->modeleConnexion->getAllCommandes($mail);
+        //var_dump($lesCommandes);
         include("vues/v_espaceClient.php");
+
     }
 
   /**

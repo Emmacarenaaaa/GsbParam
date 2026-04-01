@@ -63,6 +63,7 @@ class Routeur{
                 {
                     case null: if (isset($_SESSION['mail'])) {
                         $this->ctrlConnexion->espaceClient($_SESSION['mail']);
+                        
                     } else {
                         $this->ctrlConnexion->pageConnexion();
                     } break;
@@ -76,10 +77,11 @@ class Routeur{
                         {
                             $this->ctrlConnexion->pageConnexion(); 
                         }
+                        case 'seDeconnecter':
+                            $this->ctrlConnexion->seDeconnecter();break;
                     }; break;
 
-                    case 'seDeconnecter':
-                        $this->ctrlConnexion->seDeconnecter();break;
+                   
         case 'administrer' :  // TODO Créer un contrôleur spécial pour l'administration du site
         break; 
     }

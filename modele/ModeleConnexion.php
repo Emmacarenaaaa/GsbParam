@@ -17,7 +17,6 @@ function getAllInformationCompte($mail)
     try 
     {
         $req = 'SELECT * from client WHERE mail= ? ;';
-       // $req= bindParam(':mail', $mail, PDO::PARAM_STR);
         $params= [$mail];
         $res =$this->executerRequete($req, $params);
         $result = $res->fetch();
@@ -30,7 +29,24 @@ function getAllInformationCompte($mail)
 		}
 
 }
+function getAllCommandes($mail)
+{
+    try 
+    {
+        $req = 'SELECT * from commande WHERE mailClient= ? ;';
+       
+        $params= [$mail];
+        $res =$this->executerRequete($req, $params);
+        $result = $res->fetchAll();
+        return $result;
+    }
+        catch (PDOException $e) 
+		{
+        print "Erreur !: " . $e->getMessage();
+        die();
+		}
 
+}
 
 function checkConnexion($mail, $mdp)
 {
@@ -38,8 +54,6 @@ function checkConnexion($mail, $mdp)
     {
    
         $req = 'SELECT mail, password FROM client WHERE mail = ? AND password = ?';
-        //$req->bindParam(':mail', $mail, PDO::PARAM_STR);
-        //$req->bindParam(':mdp', $mdp, PDO::PARAM_STR);
         $params = [$mail, $mdp];
         $res = $this->executerRequete($req, $params);
         $result = $res->fetch();
