@@ -58,10 +58,15 @@ class Routeur{
                 case 'viderPanier' : {$this->ctrlGererPanier->supprimerPanier();break;}
                 default: {$this->ctrlGererPanier->voirPanier();break;}
             }; break;
-            case 'connexion':
+            case 'espaceClient':
                 switch($action)
                 {
-                    case null:{$this->ctrlConnexion->pageConnexion();break;}
+                    case null: if (isset($_SESSION['mail'])) {
+                        $this->ctrlConnexion->espaceClient($_SESSION['mail']);
+                    } else {
+                        $this->ctrlConnexion->pageConnexion();
+                    } break;
+
                     case 'seConnecter':
                         if (isset($_POST['mail']) && isset($_POST['mdp'])) {
                             $mail = $_POST['mail'];
@@ -72,6 +77,9 @@ class Routeur{
                             $this->ctrlConnexion->pageConnexion(); 
                         }
                     }; break;
+
+                    case 'seDeconnecter':
+                        $this->ctrlConnexion->seDeconnecter();break;
         case 'administrer' :  // TODO Créer un contrôleur spécial pour l'administration du site
         break; 
     }

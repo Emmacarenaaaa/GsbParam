@@ -16,9 +16,10 @@ function getAllInformationCompte($mail)
 
     try 
     {
-        $req = 'SELECT * from client WHERE mail= :mail;';
+        $req = 'SELECT * from client WHERE mail= ? ;';
        // $req= bindParam(':mail', $mail, PDO::PARAM_STR);
-        $res =$this->executerRequete($req, $mail);
+        $params= [$mail];
+        $res =$this->executerRequete($req, $params);
         $result = $res->fetch();
         return $result;
     }
