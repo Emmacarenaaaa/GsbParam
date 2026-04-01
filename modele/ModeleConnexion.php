@@ -66,7 +66,20 @@ function checkConnexion($mail, $mdp)
     }
     
 }
+function updateClient($mail,$nom,$prenom, $mdp){
+    try 
+    {
+        $req='UPDATE client SET  nomCli = ? , prenomCli= ? , password= ? WHERE mail= ?';
+        $params =[$nom,$prenom, $mdp,$mail];
+        $res =$this->executerRequete($req,$params);
+        return $res;
 
+    }
+    catch (PDOException $e) {
+        print "Erreur !: " . $e->getMessage();
+        die();
+    }
+}
 
 
 

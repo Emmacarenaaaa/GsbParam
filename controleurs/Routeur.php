@@ -61,12 +61,13 @@ class Routeur{
             case 'espaceClient':
                 switch($action)
                 {
-                    case null: if (isset($_SESSION['mail'])) {
-                        $this->ctrlConnexion->espaceClient($_SESSION['mail']);
-                        
-                    } else {
-                        $this->ctrlConnexion->pageConnexion();
-                    } break;
+                    case null: 
+                        if (isset($_SESSION['mail'])) {
+                            $this->ctrlConnexion->espaceClient($_SESSION['mail']);
+                        } else {
+                            $this->ctrlConnexion->pageConnexion();
+                        } 
+                        break;
 
                     case 'seConnecter':
                         if (isset($_POST['mail']) && isset($_POST['mdp'])) {
@@ -78,12 +79,22 @@ class Routeur{
                             $this->ctrlConnexion->pageConnexion(); 
                         }
                         case 'seDeconnecter':
-                            $this->ctrlConnexion->seDeconnecter();break;
-                    }; break;
+                            $this->ctrlConnexion->seDeconnecter();
+                            break;
+                        case 'modifierprofil':
+                            $this->ctrlConnexion->modifierProfil($_SESSION['mail']);
+                             break;
+                        case 'confirmerModif':
+                                $this->ctrlConnexion->confirmerModif($_SESSION['mail']);
+
+                            break;
+
+                    }; 
+                    break;
 
                    
-        case 'administrer' :  // TODO Créer un contrôleur spécial pour l'administration du site
-        break; 
+      //  case 'administrer' :  // TODO Créer un contrôleur spécial pour l'administration du site
+      //  break; 
     }
     }
 }

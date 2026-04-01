@@ -31,7 +31,18 @@ class ControleurConnexion{
         include("vues/v_espaceClient.php");
 
     }
-
+    public function modifierProfil($mail) {
+        $lesInfos = $this->modeleConnexion->getAllInformationCompte($mail);
+        include("vues/v_modifierProfil.php");
+    }
+    public function confirmerModif($mail) {
+        $nom = $_POST['nomCli'];
+        $prenom = $_POST['prenomCli'];
+        $mdp =$_POST['password'];
+        $this->modeleConnexion->updateClient($mail, $nom, $prenom,$mdp);
+        header("Location: index.php?uc=espaceClient");
+    exit();
+    }
   /**
 	 * lance la fonction qui verifie la connexion
 	*/

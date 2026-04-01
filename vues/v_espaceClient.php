@@ -5,6 +5,7 @@
         <li><strong>Mail :</strong> <?php echo $lesInfos['mail']; ?></li>
         <li><strong>Mot de passe :</strong> <?php echo $lesInfos['password']; ?></li>
     <?php endif; ?>
+    <a href="index.php?uc=espaceClient&action=modifierProfil" class="btn">Modifier mes informations</a>
 
     <h3>Historique de vos commandes</h3>
     <table class="table">
