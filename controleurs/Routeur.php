@@ -2,6 +2,7 @@
 require_once 'controleurs/ControleurVoirProduits.php';
 require_once 'controleurs/ControleurAccueil.php';
 require_once 'controleurs/ControleurGererPanier.php';
+require_once 'controleurs/ControleurConnexion.php';
 /**
  * @class Routeur
  * @brief gère les routes (actions à exécuter en fonction des urls)
@@ -11,12 +12,15 @@ class Routeur{
     private $ctrlVoirProduits;
     private $ctrlAccueil;
     private $ctrlGererPanier;
+    private $ctrlConnexion;
+
     
     public function __construct(){
         
         $this->ctrlVoirProduits=new ControleurVoirProduits();
         $this->ctrlAccueil=new ControleurAccueil();
         $this->ctrlGererPanier=new ControleurGererPanier();
+        $this->ctrlConnexion=new ControleurConnexion();
     }
     /** recupère les paramètres de l'url et active les contrôleurs nécessaires
     */
@@ -54,6 +58,20 @@ class Routeur{
                 case 'viderPanier' : {$this->ctrlGererPanier->supprimerPanier();break;}
                 default: {$this->ctrlGererPanier->voirPanier();break;}
             }; break;
+            case 'connexion':
+                switch($action)
+                {
+                    case null:{$this->ctrlConnexion->pageConnexion();break;}
+                    case 'seConnecter':
+                        if (isset($_POST['mail']) && isset($_POST['mdp'])) {
+                            $mail = $_POST['mail'];
+                            $mdp = $_POST['mdp'];
+                            $this->ctrlConnexion->seConnecter($mail,$mdp);
+                        } else
+                        {
+                            $this->ctrlConnexion->pageConnexion(); 
+                        }
+                    }; break;
         case 'administrer' :  // TODO Créer un contrôleur spécial pour l'administration du site
         break; 
     }
