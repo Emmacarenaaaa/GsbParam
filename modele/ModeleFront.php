@@ -22,7 +22,7 @@ class ModeleFront extends Modele{
 	{
 		try 
 		{
-		$req = 'select id, libelle from categorie';
+		$req = 'select idCat, libelleCat from categorie';
 		$res = $this->executerRequete($req);
 		$lesLignes = $res->fetchAll(PDO::FETCH_OBJ);
 		return $lesLignes;
@@ -43,7 +43,7 @@ class ModeleFront extends Modele{
 	{
 		try 
 		{
-        $req = 'SELECT id, libelle FROM categorie WHERE id="'.$idCategorie.'"';
+        $req = 'SELECT * FROM categorie WHERE idCat="'.$idCategorie.'"';
 		$res = $this->executerRequete($req);
 		$laLigne = $res->fetch(PDO::FETCH_OBJ);
 		return $laLigne;
@@ -52,6 +52,24 @@ class ModeleFront extends Modele{
 		{
         print "Erreur !: " . $e->getMessage();
         die();
+		}
+	}
+	public function getLesDetailsDuProduit($id)
+	{
+		try 
+		{
+			$req= 'SELECT p.idProd, p.descriptionProd, p.prixProd, p.imageProd, p.idCat,p.stockProd, c.libelleCat FROM produit p 
+			INNER JOIN categorie c 
+			ON p.idCat=c.idCat
+			WHERE p.idProd=?';
+			$res =$this->executerRequete($req, [$id]);
+			$resultat = $res->fetch(PDO::FETCH_ASSOC);
+			return $resultat;
+		}
+		catch(PDOException $e)
+		{
+			print "Aucun produit trouvé !: ".$e->getMessage();
+			die();
 		}
 	}
 /**
@@ -66,7 +84,7 @@ class ModeleFront extends Modele{
 	{
 		try 
 		{
-	    $req='select id, description, prix, image, idCategorie from produit where idCategorie ="'.$idCategorie.'"';
+	    $req='select * from produit where idCat ="'.$idCategorie.'"';
 		$res = $this->executerRequete($req);
 		$lesLignes = $res->fetchAll(PDO::FETCH_OBJ);
 		return $lesLignes; 
@@ -92,7 +110,7 @@ class ModeleFront extends Modele{
 		{
 			foreach($desIdsProduit as $unIdProduit)
 			{
-				$req = 'select id, description, prix, image, idCategorie from produit where id = "'.$unIdProduit.'"';
+				$req = 'select * from produit where idProd = "'.$unIdProduit.'"';
 				$res = $this->executerRequete($req);
 				$unProduit = $res->fetch(PDO::FETCH_OBJ);
 				$lesProduits[] = $unProduit;
@@ -100,7 +118,7 @@ class ModeleFront extends Modele{
 		}
 		else // on souhaite tous les produits
 		{
-			$req = 'select id, description, prix, image, idCategorie from produit;';
+			$req = 'select * from produit;';
 			$res = $this->executerRequete($req);
 			$lesProduits = $res->fetchAll(PDO::FETCH_OBJ);
 		}

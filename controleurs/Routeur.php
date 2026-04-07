@@ -43,7 +43,8 @@ class Routeur{
                 case null :
                 case 'voirCategories' : {$this->ctrlVoirProduits->voirProduits(null); break;}
                 case 'voirProduits' : {$this->ctrlVoirProduits->voirProduits($_REQUEST['categorie']);break;}
-                case 'nosProduits' : {$this->ctrlVoirProduits->voirTousLesProduits(); break;} // AJOUT
+                case 'nosProduits' : {$this->ctrlVoirProduits->voirTousLesProduits(); break;} 
+                case 'voirDetails': {$this->ctrlVoirProduits->voirDetailsProduits($_REQUEST['id']);break;}
             }; break;
         case 'gererPanier' :
             switch ($action)
@@ -55,7 +56,7 @@ class Routeur{
                 case 'viderPanier' : {$this->ctrlGererPanier->viderPanier();break;}
                 case 'passerCommande' : $this->ctrlGererPanier->passerCommande();break;
                 case 'confirmerCommande' : $this->ctrlGererPanier->confirmerCommande();break;
-                case 'viderPanier' : {$this->ctrlGererPanier->supprimerPanier();break;}
+              //  case 'viderPanier' : {$this->ctrlGererPanier->supprimerPanier();break;}
                 default: {$this->ctrlGererPanier->voirPanier();break;}
             }; break;
             case 'espaceClient':
@@ -70,10 +71,10 @@ class Routeur{
                         break;
 
                     case 'seConnecter':
-                        if (isset($_POST['mail']) && isset($_POST['mdp'])) {
-                            $mail = $_POST['mail'];
-                            $mdp = $_POST['mdp'];
-                            $this->ctrlConnexion->seConnecter($mail,$mdp);
+                        if (isset($_POST['pseudo']) && isset($_POST['motPasse'])) {
+                            $pseudo = $_POST['pseudo'];
+                            $mdp = $_POST['motPasse'];
+                            $this->ctrlConnexion->seConnecter($pseudo,$mdp);
                         } else
                         {
                             $this->ctrlConnexion->pageConnexion(); 
@@ -81,7 +82,7 @@ class Routeur{
                         case 'seDeconnecter':
                             $this->ctrlConnexion->seDeconnecter();
                             break;
-                        case 'modifierprofil':
+                        case 'modifierProfil':
                             $this->ctrlConnexion->modifierProfil($_SESSION['mail']);
                              break;
                         case 'confirmerModif':

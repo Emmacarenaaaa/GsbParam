@@ -3,8 +3,8 @@
 <?php
 foreach( $lesCategories as $uneCategorie) 
 {
-	$idCategorie = $uneCategorie->id;
-	$libCategorie = $uneCategorie->libelle;
+	$idCategorie = $uneCategorie->idCat;
+	$libCategorie = $uneCategorie->libelleCat;
 	?>
 	<li>
 		<a class="text-decoration-none text-light" href="index.php?uc=voirProduits&action=voirProduits&categorie=<?= $idCategorie ?>">

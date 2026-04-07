@@ -24,30 +24,31 @@ class ControleurConnexion{
         include("vues/v_connexion.html");
     }
 
-    public function espaceClient($mail){
-        $lesInfos= $this->modeleConnexion->getAllInformationCompte($mail);
-        $lesCommandes=$this->modeleConnexion->getAllCommandes($mail);
+    public function espaceClient($idUser){
+        $lesInfos= $this->modeleConnexion->getAllInformationCompte($idUser);
+        $lesCommandes=$this->modeleConnexion->getAllCommandes($idUser);
         //var_dump($lesCommandes);
         include("vues/v_espaceClient.php");
 
     }
-    public function modifierProfil($mail) {
-        $lesInfos = $this->modeleConnexion->getAllInformationCompte($mail);
-        include("vues/v_modifierProfil.php");
+    public function modifierProfil($idUser) {
+        $lesInfos = $this->modeleConnexion->getAllInformationCompte($idUser);
+        include("./vues/v_modifierProfil.php");
     }
-    public function confirmerModif($mail) {
+    public function confirmerModif($idUser) {
+        
         $nom = $_POST['nomCli'];
         $prenom = $_POST['prenomCli'];
         $mdp =$_POST['password'];
-        $this->modeleConnexion->updateClient($mail, $nom, $prenom,$mdp);
+        $this->modeleConnexion->updateClient($idUser, $nom, $prenom,$mdp);
         header("Location: index.php?uc=espaceClient");
     exit();
     }
   /**
 	 * lance la fonction qui verifie la connexion
 	*/
-    public function seConnecter($mail,$mdp){
-       $resultat= $this->modeleConnexion->checkConnexion($mail, $mdp);
+    public function seConnecter($pseudo,$mdp){
+       $resultat= $this->modeleConnexion->checkConnexion($pseudo, $mdp);
        if($resultat){
         //connexion réussie
        if (session_status()=== PHP_SESSION_NONE){ session_start();}
@@ -58,7 +59,7 @@ class ControleurConnexion{
        
         }else
        //echec
-       $erreurs="Mail ou Mot de passe incorrect.";
+       $erreurs="Pseudo ou Mot de passe incorrect.";
        require 'vues/v_connexion.html';
        return $resultat;
      

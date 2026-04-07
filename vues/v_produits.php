@@ -4,11 +4,10 @@
 
 foreach( $lesProduits as $unProduit) 
 { 	
-	$id = $unProduit->id;
-	$description = $unProduit->description;
-	$image = $unProduit->image;
-	$prix = $unProduit->prix;
-
+	$id = $unProduit->idProd;
+	$description = $unProduit->descriptionProd;
+	$image = $unProduit->imageProd;
+	$prix = $unProduit->prixProd;
 	?>	
 	<div id="card">
 		
@@ -18,7 +17,10 @@ foreach( $lesProduits as $unProduit)
 			<div class="prixCard"><?= $prix."€" ?></div>
 			</div>
 			<div class="imgCard"><a href="index.php?uc=gererPanier&produit=<?= $id ?>&action=ajouterAuPanier"> 
-			<img src="assets/images/mettrepanier.png" title="Ajouter au panier" alt="Mettre au panier"> </a></div>
+			
+			<img src="assets/images/mettrepanier.png" title="Ajouter au panier" alt="Mettre au panier"> </a>
+			<a href="index.php?uc=voirProduits&action=voirDetails&id=<?= $id ?>">
+        <button type="button">Voir les détails</button>
 			
 	</div>
 <?php			

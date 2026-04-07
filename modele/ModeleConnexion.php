@@ -11,13 +11,13 @@
 require_once 'Modele.php';
 class ModeleConnexion extends Modele{
 
-function getAllInformationCompte($mail)
+function getAllInformationCompte($idUser)
 {
 
     try 
     {
-        $req = 'SELECT * from client WHERE mail= ? ;';
-        $params= [$mail];
+        $req = 'SELECT * from utilisateur WHERE id= ? ;';
+        $params= [$idUser];
         $res =$this->executerRequete($req, $params);
         $result = $res->fetch();
         return $result;
@@ -29,13 +29,13 @@ function getAllInformationCompte($mail)
 		}
 
 }
-function getAllCommandes($mail)
+function getAllCommandes($idUser)
 {
     try 
     {
-        $req = 'SELECT * from commande WHERE mailClient= ? ;';
+        $req = 'SELECT * from commande WHERE idUser= ? ;';
        
-        $params= [$mail];
+        $params= [$idUser];
         $res =$this->executerRequete($req, $params);
         $result = $res->fetchAll();
         return $result;
@@ -48,17 +48,19 @@ function getAllCommandes($mail)
 
 }
 
-function checkConnexion($mail, $mdp)
+function checkConnexion($pseudo, $mdp)
 {
     try 
     {
    
-        $req = 'SELECT mail, password FROM client WHERE mail = ? AND password = ?';
-        $params = [$mail, $mdp];
+        $req = 'SELECT pseudo, motPasse FROM login
+    WHERE pseudo = ? AND motPasse = ?';
+        $params = [$pseudo, $mdp];
         $res = $this->executerRequete($req, $params);
         $result = $res->fetch();
         return $result;
     }
+
     catch (PDOException $e) 
     {
     print "Erreur !: " . $e->getMessage();
@@ -66,11 +68,11 @@ function checkConnexion($mail, $mdp)
     }
     
 }
-function updateClient($mail,$nom,$prenom, $mdp){
+function updateClient($idUser,$nom,$prenom, $mdp){
     try 
     {
-        $req='UPDATE client SET  nomCli = ? , prenomCli= ? , password= ? WHERE mail= ?';
-        $params =[$nom,$prenom, $mdp,$mail];
+        $req='UPDATE utilisateur SET  nomCli = ? , prenomCli= ? , password= ? WHERE idUser= ?';
+        $params =[$nom,$prenom, $mdp,$idUser];
         $res =$this->executerRequete($req,$params);
         return $res;
 

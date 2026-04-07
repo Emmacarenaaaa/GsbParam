@@ -32,7 +32,7 @@ class ControleurVoirProduits{
     $lesCategories = $this->modeleFront->getLesCategories();
     $infosCategorie = $this->modeleFront->getLesInfosCategorie($categ);
 
-    $titreCategorie = "Produits de la catégorie :" . strtolower($infosCategorie->libelle);
+    $titreCategorie = "Produits de la catégorie :" . strtolower($infosCategorie->libelleCat);
 
     include("vues/v_choixCategorie.php");
     include("vues/v_produits.php");
@@ -41,6 +41,14 @@ public function voirTousLesProduits() {
     $lesProduits = $this->modeleFront->getLesProduitsDuTableau();
     $titreCategorie = "Tous les produits : ";
     include("vues/v_produits.php");
+}
+public function voirDetailsProduits($id) {
+    $unProduit = $this->modeleFront->getLesDetailsDuProduit($id);
+    if (!$unProduit) {
+        header("Location: index.php?uc=voirProduits");
+        exit();
+    }
+    include("vues/v_detailProduit.php");
 }
 	/**
 	 * Affiche le menu à gauche contenant les catégories

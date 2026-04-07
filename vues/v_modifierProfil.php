@@ -1,7 +1,4 @@
-<?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-?>
+
 <div id="contenu">
     <h2>Modifier mes informations</h2>
     <form action="index.php?uc=espaceClient&action=confirmerModif" method="post">
@@ -15,6 +12,9 @@ ini_set('display_errors', 1);
         </p>
         <p>
             <strong>Mail :</strong> <?php echo $lesInfos['mail']; ?> (non modifiable)
+        </p>
+        <p>
+            <strong>Mot de passe :</strong>  <input type="password" id="mdp" name="password" value="<?php echo $lesInfos['password']; ?>" required>
         </p>
         
         <input type="submit" value="Enregistrer les modifications">

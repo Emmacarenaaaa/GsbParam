@@ -2,5 +2,5 @@
 define('USER','root');
 define('PASSWD','');
 define('SERVER','localhost:3307');
-define('BASE','emma_m2');
+define('BASE','gsbparam_v1');
 ?>
