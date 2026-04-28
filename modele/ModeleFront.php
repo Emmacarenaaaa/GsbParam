@@ -148,21 +148,48 @@ class ModeleFront extends Modele{
 	{
 		try 
 		{
-        // on récupère le dernier id de commande
-		$req = 'select max(id) as maxi from commande';
-		$res = $this->executerRequete($req);
-		$laLigne = $res->fetch();
-		$maxi = $laLigne['maxi'] ;// on place le dernier id de commande dans $maxi
-		$idCommande = $maxi+1; // on augmente le dernier id de commande de 1 pour avoir le nouvel idCommande
-		$date = date('Y/m/d'); // récupération de la date système
-		$req = "insert into commande values ('$idCommande','$date','$nom','$rue','$cp','$ville','$mail')";
-		$res = $this->executerRequete($req);
-		// insertion produits commandés
-		foreach($lesIdProduit as $unIdProduit)
-		{
-			$req = "insert into contenir values ('$idCommande','$unIdProduit')";
-			$res = $this->executerRequete($req);
-		}
+			// Recherche de l'utilisateur ou création s'il n'existe pas
+			$reqSelectUser = 'SELECT idUser FROM utilisateur WHERE adresseMailUser = ?';
+			$resUser = $this->executerRequete($reqSelectUser, [$mail]);
+			$user = $resUser->fetch();
+			$idUser = 0;
+
+			if ($user) {
+				$idUser = $user['idUser'];
+			} else {
+				$reqInsertUser = 'INSERT INTO utilisateur (nomUser, prenomUser, adresseMailUser, adresseRueUser, villeUser, cpUser, idHab) VALUES (?, ?, ?, ?, ?, ?, 2)';
+				$this->executerRequete($reqInsertUser, [$nom, "", $mail, $rue, $ville, $cp]);
+				$reqMaxUser = 'SELECT max(idUser) as maxi FROM utilisateur';
+				$resMaxUser = $this->executerRequete($reqMaxUser);
+				$idUser = $resMaxUser->fetch()['maxi'];
+			}
+
+			// Calcul du montant de la commande
+			$montantCom = 0;
+			foreach($lesIdProduit as $unIdProduit) {
+				$reqPrix = 'SELECT prixProd FROM produit WHERE idProd = ?';
+				$resPrix = $this->executerRequete($reqPrix, [$unIdProduit]);
+				$montantCom += $resPrix->fetch()['prixProd'];
+			}
+
+			$date = date('Y/m/d'); 
+
+			// Création de la commande dans paniercommande (état=2 Validé)
+			$reqInsertCom = "INSERT INTO paniercommande (dateCom, montantCom, idUser, idEtat) VALUES (?, ?, ?, 2)";
+			$this->executerRequete($reqInsertCom, [$date, $montantCom, $idUser]);
+
+			// Récupération de l'id de la commande créée
+			$reqMaxCom = 'SELECT max(idCom) as maxi FROM paniercommande';
+			$resMaxCom = $this->executerRequete($reqMaxCom);
+			$idCommande = $resMaxCom->fetch()['maxi'];
+
+			// Insertion des produits dans lignecommande avec quantité
+			$produitCounts = array_count_values($lesIdProduit);
+			foreach($produitCounts as $unIdProduit => $quantite)
+			{
+				$reqInsertLigne = "INSERT INTO lignecommande (quantite, idCom, idProd) VALUES (?, ?, ?)";
+				$this->executerRequete($reqInsertLigne, [$quantite, $idCommande, $unIdProduit]);
+			}
 		}
 		catch (PDOException $e) 
 		{

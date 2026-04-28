@@ -71,9 +71,9 @@ class Routeur{
                         break;
 
                     case 'seConnecter':
-                        if (isset($_POST['pseudo']) && isset($_POST['motPasse'])) {
+                        if (isset($_POST['pseudo']) && isset($_POST['mdp'])) {
                             $pseudo = $_POST['pseudo'];
-                            $mdp = $_POST['motPasse'];
+                            $mdp = $_POST['mdp'];
                             $this->ctrlConnexion->seConnecter($pseudo,$mdp);
                         } else
                         {

@@ -11,13 +11,13 @@
 require_once 'Modele.php';
 class ModeleConnexion extends Modele{
 
-function getAllInformationCompte($idUser)
+function getAllInformationCompte($mail)
 {
 
     try 
     {
-        $req = 'SELECT * from utilisateur WHERE id= ? ;';
-        $params= [$idUser];
+        $req = 'SELECT u.nomUser as nomCli, u.prenomUser as prenomCli, u.adresseMailUser as mail, l.motPasse as password FROM utilisateur u INNER JOIN login l ON u.idUser = l.idUser WHERE u.adresseMailUser = ? ;';
+        $params= [$mail];
         $res =$this->executerRequete($req, $params);
         $result = $res->fetch();
         return $result;
@@ -29,13 +29,13 @@ function getAllInformationCompte($idUser)
 		}
 
 }
-function getAllCommandes($idUser)
+function getAllCommandes($mail)
 {
     try 
     {
-        $req = 'SELECT * from commande WHERE idUser= ? ;';
+        $req = 'SELECT c.idCom as id, c.dateCom as dateCommande, CONCAT(u.nomUser, " ", u.prenomUser) as nomPrenomClient, u.villeUser as villeClient, u.adresseRueUser as adresseRueClient, u.cpUser as cpClient FROM paniercommande c INNER JOIN utilisateur u ON c.idUser = u.idUser WHERE u.adresseMailUser = ? ;';
        
-        $params= [$idUser];
+        $params= [$mail];
         $res =$this->executerRequete($req, $params);
         $result = $res->fetchAll();
         return $result;
@@ -53,8 +53,7 @@ function checkConnexion($pseudo, $mdp)
     try 
     {
    
-        $req = 'SELECT pseudo, motPasse FROM login
-    WHERE pseudo = ? AND motPasse = ?';
+        $req = 'SELECT u.adresseMailUser as mail FROM login l INNER JOIN utilisateur u ON l.idUser = u.idUser WHERE l.pseudo = ? AND l.motPasse = ?';
         $params = [$pseudo, $mdp];
         $res = $this->executerRequete($req, $params);
         $result = $res->fetch();
@@ -68,14 +67,18 @@ function checkConnexion($pseudo, $mdp)
     }
     
 }
-function updateClient($idUser,$nom,$prenom, $mdp){
+function updateClient($mail,$nom,$prenom, $mdp){
     try 
     {
-        $req='UPDATE utilisateur SET  nomCli = ? , prenomCli= ? , password= ? WHERE idUser= ?';
-        $params =[$nom,$prenom, $mdp,$idUser];
+        $req='UPDATE utilisateur SET nomUser = ? , prenomUser= ? WHERE adresseMailUser= ?';
+        $params =[$nom,$prenom,$mail];
         $res =$this->executerRequete($req,$params);
-        return $res;
+        
+        $req2='UPDATE login l INNER JOIN utilisateur u ON l.idUser = u.idUser SET l.motPasse = ? WHERE u.adresseMailUser= ?';
+        $params2 =[$mdp,$mail];
+        $res2 =$this->executerRequete($req2,$params2);
 
+        return $res && $res2;
     }
     catch (PDOException $e) {
         print "Erreur !: " . $e->getMessage();
