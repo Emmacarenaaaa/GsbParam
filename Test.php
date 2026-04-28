@@ -1,11 +1,12 @@
 <?php
-require_once 'modele/Modele.php';
-require_once 'modele/ModeleFront.php';
+require 'config/.config.php';
+require 'modele/ModeleConnexion.php';
+$m = new ModeleConnexion();
+$mail = 'Vincent.LaG@mail.com';
+$cmd = $m->getAllCommandes($mail);
+echo "\n--- Commandes ---\n";
+print_r($cmd);
 
-$modeleFront = new ModeleFront();
-
-var_dump($modeleFront->getLesCategories());
-
-
-var_dump($modeleFront->getLesProduitsDeCategorie("CH"));
-?>
+$info = $m->getAllInformationCompte($mail);
+echo "\n--- Infos ---\n";
+print_r($info);

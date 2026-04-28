@@ -13,26 +13,22 @@
         <tr>
             <th>Numéro</th>
             <th>Date</th>
-            <th>Nom Prenom</th>
-            <th>Ville</th>
-            <th>Adresse</th>
-            <th>Code Postal</th>
+            <th>Montant</th>
+            <th>État de la commande</th>
         </tr>
     </thead>
     <tbody>
-        <?php if (isset($lesCommandes) && is_array($lesCommandes)): ?>
+        <?php if (isset($lesCommandes) && is_array($lesCommandes) && !empty($lesCommandes)): ?>
             <?php foreach($lesCommandes as $uneCommande): ?>
                 <tr>
-                    <td><?php echo $uneCommande['id']; ?></td>
-                    <td><?php echo $uneCommande['dateCommande']; ?></td>
-                    <td><?php echo $uneCommande['nomPrenomClient']; ?></td>
-                    <td><?php echo $uneCommande['villeClient']; ?></td>
-                    <td><?php echo $uneCommande['adresseRueClient']; ?></td>
-                    <td><?php echo $uneCommande['cpClient']; ?></td>
+                    <td><?php echo htmlspecialchars($uneCommande['id']); ?></td>
+                    <td><?php echo htmlspecialchars($uneCommande['dateCommande']); ?></td>
+                    <td><?php echo htmlspecialchars($uneCommande['montant']); ?> €</td>
+                    <td><?php echo htmlspecialchars($uneCommande['etat']); ?></td>
                 </tr>
             <?php endforeach; ?>
         <?php else: ?>
-            <tr><td colspan="6">Aucune commande trouvée.</td></tr>
+            <tr><td colspan="4">Aucune commande trouvée.</td></tr>
         <?php endif; ?>
     </tbody>
 </table>

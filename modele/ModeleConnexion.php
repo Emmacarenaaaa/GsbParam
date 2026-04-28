@@ -33,7 +33,11 @@ function getAllCommandes($mail)
 {
     try 
     {
-        $req = 'SELECT c.idCom as id, c.dateCom as dateCommande, CONCAT(u.nomUser, " ", u.prenomUser) as nomPrenomClient, u.villeUser as villeClient, u.adresseRueUser as adresseRueClient, u.cpUser as cpClient FROM paniercommande c INNER JOIN utilisateur u ON c.idUser = u.idUser WHERE u.adresseMailUser = ? ;';
+        $req = 'SELECT c.idCom as id, c.dateCom as dateCommande, c.montantCom as montant, e.libelleEtat as etat 
+                FROM paniercommande c 
+                INNER JOIN utilisateur u ON c.idUser = u.idUser 
+                INNER JOIN etat e ON c.idEtat = e.idEtat
+                WHERE u.adresseMailUser = ? ORDER BY c.dateCom DESC;';
        
         $params= [$mail];
         $res =$this->executerRequete($req, $params);
