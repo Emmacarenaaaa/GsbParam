@@ -16,7 +16,7 @@ function getAllInformationCompte($mail)
 
     try 
     {
-        $req = 'SELECT u.nomUser as nomCli, u.prenomUser as prenomCli, u.adresseMailUser as mail, l.motPasse as password FROM utilisateur u INNER JOIN login l ON u.idUser = l.idUser WHERE u.adresseMailUser = ? ;';
+        $req = 'SELECT u.idUser, u.nomUser as nomCli, u.prenomUser as prenomCli, u.adresseMailUser as mail, l.motPasse as password FROM utilisateur u INNER JOIN login l ON u.idUser = l.idUser WHERE u.adresseMailUser = ? ;';
         $params= [$mail];
         $res =$this->executerRequete($req, $params);
         $result = $res->fetch();
@@ -52,12 +52,27 @@ function getAllCommandes($mail)
 
 }
 
+function getLignesCommande($idCom) {
+    try {
+        $req = 'SELECT l.quantite, p.nomProd, p.imageProd, p.prixProd, p.contenanceProd, p.uniteProd, m.libelleMarque 
+                FROM lignecommande l 
+                INNER JOIN produit p ON l.idProd = p.idProd 
+                INNER JOIN marque m ON p.idMarque = m.idMarque 
+                WHERE l.idCom = ?';
+        $res = $this->executerRequete($req, [$idCom]);
+        return $res->fetchAll(PDO::FETCH_OBJ);
+    } catch (PDOException $e) {
+        print "Erreur !: " . $e->getMessage();
+        die();
+    }
+}
+
 function checkConnexion($pseudo, $mdp)
 {
     try 
     {
    
-        $req = 'SELECT u.adresseMailUser as mail FROM login l INNER JOIN utilisateur u ON l.idUser = u.idUser WHERE l.pseudo = ? AND l.motPasse = ?';
+        $req = 'SELECT u.idUser, u.adresseMailUser as mail, u.idHab as idHab FROM login l INNER JOIN utilisateur u ON l.idUser = u.idUser WHERE l.pseudo = ? AND l.motPasse = ?';
         $params = [$pseudo, $mdp];
         $res = $this->executerRequete($req, $params);
         $result = $res->fetch();
@@ -90,7 +105,21 @@ function updateClient($mail,$nom,$prenom, $mdp){
     }
 }
 
-
-
+function getAllAvisClient($idUser) {
+    try {
+        $req = 'SELECT a.note, a.date_avis, a.description, p.nomProd, p.idProd, p.imageProd 
+                FROM ecrire_avis a 
+                INNER JOIN produit p ON a.idProd = p.idProd 
+                WHERE a.idUser = ? 
+                ORDER BY a.date_avis DESC';
+        $params = [$idUser];
+        $res = $this->executerRequete($req, $params);
+        return $res->fetchAll(PDO::FETCH_OBJ);
+    } catch (PDOException $e) {
+        print "Erreur !: " . $e->getMessage();
+        die();
+    }
+}
 
 }
+?>

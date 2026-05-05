@@ -24,9 +24,24 @@ class ControleurConnexion{
         include("vues/v_connexion.html");
     }
 
-    public function espaceClient($idUser){
-        $lesInfos= $this->modeleConnexion->getAllInformationCompte($idUser);
-        $lesCommandes=$this->modeleConnexion->getAllCommandes($idUser);
+    public function espaceClient($mail){
+        $lesInfos= $this->modeleConnexion->getAllInformationCompte($mail);
+        $lesCommandesBase=$this->modeleConnexion->getAllCommandes($mail);
+        
+        // Enrichir les commandes avec leurs lignes
+        $lesCommandes = [];
+        foreach ($lesCommandesBase as $cmd) {
+            $cmd['lignes'] = $this->modeleConnexion->getLignesCommande($cmd['id']);
+            $lesCommandes[] = $cmd;
+        }
+        
+        $idUser = $lesInfos['idUser'] ?? ($_SESSION['idUser'] ?? null);
+        $lesAvis = [];
+        if ($idUser) {
+            $lesAvis = $this->modeleConnexion->getAllAvisClient($idUser);
+        }
+        
+        //var_dump($lesCommandes);
         //var_dump($lesCommandes);
         include("vues/v_espaceClient.php");
 
@@ -52,7 +67,9 @@ class ControleurConnexion{
        if($resultat){
         //connexion réussie
        if (session_status()=== PHP_SESSION_NONE){ session_start();}
+        $_SESSION['idUser'] = $resultat['idUser'];
         $_SESSION['mail']=$resultat['mail'];
+        $_SESSION['idHab']=$resultat['idHab'];
 
         header("Location:index.php?uc=espaceClient");
         exit();

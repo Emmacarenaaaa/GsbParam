@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * @file ControleurVoirProduits.php
  * @author Marielle Jouin <jouin.marielle@gmail.com>
@@ -38,7 +38,10 @@ class ControleurVoirProduits{
     include("vues/v_produits.php");
 }
 public function voirTousLesProduits() {
-    $lesProduits = $this->modeleFront->getLesProduitsDuTableau();
+    $dispoOnly = isset($_GET['dispo_only']) && $_GET['dispo_only'] == '1';
+    $sort = isset($_GET['sort']) ? $_GET['sort'] : 'id_asc';
+
+    $lesProduits = $this->modeleFront->getTousLesProduitsFront($dispoOnly, $sort);
     $titreCategorie = "Tous les produits : ";
     include("vues/v_produits.php");
 }
@@ -48,7 +51,43 @@ public function voirDetailsProduits($id) {
         header("Location: index.php?uc=voirProduits");
         exit();
     }
+    
+    $lesAvis = $this->modeleFront->getAvisProduit($id);
+    $aDejaAvis = false;
+    if (isset($_SESSION['idUser'])) {
+        $aDejaAvis = $this->modeleFront->aDejaLaisseAvis($_SESSION['idUser'], $id);
+    }
+    
     include("vues/v_detailProduit.php");
+}
+
+public function ajouterAvis() {
+    if (!isset($_SESSION['idUser'])) {
+        header("Location: index.php?uc=connexion");
+        exit();
+    }
+    
+    $idProd = $_POST['idProd'] ?? null;
+    $note = $_POST['note'] ?? null;
+    $description = $_POST['description'] ?? '';
+    
+    if ($idProd && $note) {
+        $success = $this->modeleFront->ajouterAvisProduit($_SESSION['idUser'], $idProd, $note, $description);
+        if ($success) {
+            $_SESSION['message_avis'] = "Votre avis a été enregistré avec succès.";
+        } else {
+            $_SESSION['erreur_avis'] = "Vous avez déjà donné votre avis sur ce produit.";
+        }
+    } else {
+        $_SESSION['erreur_avis'] = "Veuillez attribuer une note au produit.";
+    }
+    
+    if ($idProd) {
+        header("Location: index.php?uc=voirProduits&action=voirDetails&id=$idProd");
+    } else {
+        header("Location: index.php?uc=voirProduits");
+    }
+    exit();
 }
 	/**
 	 * Affiche le menu à gauche contenant les catégories

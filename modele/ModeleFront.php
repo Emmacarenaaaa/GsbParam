@@ -33,6 +33,18 @@ class ModeleFront extends Modele{
         die();
 		}
 	}
+
+    public function getLesMarques()
+    {
+        try {
+            $req = 'SELECT idMarque, libelleMarque FROM marque';
+            $res = $this->executerRequete($req);
+            return $res->fetchAll(PDO::FETCH_OBJ);
+        } catch (PDOException $e) {
+            print "Erreur !: " . $e->getMessage();
+            die();
+        }
+    }
 	/**
 	 * Retourne toutes les informations d'une catégorie passée en paramètre
 	 *
@@ -58,7 +70,7 @@ class ModeleFront extends Modele{
 	{
 		try 
 		{
-			$req= 'SELECT p.idProd, p.descriptionProd, p.prixProd, p.imageProd, p.idCat,p.stockProd, c.libelleCat FROM produit p 
+			$req= 'SELECT p.idProd, p.nomProd, p.descriptionProd, p.prixProd, p.imageProd, p.idCat, p.stockProd, p.contenanceProd, p.uniteProd, p.idMarque, c.libelleCat FROM produit p 
 			INNER JOIN categorie c 
 			ON p.idCat=c.idCat
 			WHERE p.idProd=?';
@@ -130,6 +142,35 @@ class ModeleFront extends Modele{
         die();
 		}
 	}
+	
+	public function getTousLesProduitsFront($dispoOnly = false, $sort = 'id_asc') {
+        try {
+            $req = 'SELECT * FROM produit';
+            
+            if ($dispoOnly) {
+                $req .= ' WHERE stockProd > 0';
+            }
+            
+            switch ($sort) {
+                case 'stock_asc':
+                    $req .= ' ORDER BY stockProd ASC';
+                    break;
+                case 'stock_desc':
+                    $req .= ' ORDER BY stockProd DESC';
+                    break;
+                case 'id_asc':
+                default:
+                    $req .= ' ORDER BY idProd ASC';
+                    break;
+            }
+            
+            $res = $this->executerRequete($req);
+            return $res->fetchAll(PDO::FETCH_OBJ);
+        } catch (PDOException $e) {
+            print "Erreur !: " . $e->getMessage();
+            die();
+        }
+    }
 	/**
 	 * Crée une commande 
 	 *
@@ -198,5 +239,44 @@ class ModeleFront extends Modele{
 		}
 	}
 
+    public function getAvisProduit($idProd) {
+        try {
+            $req = 'SELECT a.note, a.date_avis, a.description, u.prenomUser, u.nomUser 
+                    FROM ecrire_avis a 
+                    INNER JOIN utilisateur u ON a.idUser = u.idUser 
+                    WHERE a.idProd = ? ORDER BY a.date_avis DESC';
+            $res = $this->executerRequete($req, [$idProd]);
+            return $res->fetchAll(PDO::FETCH_OBJ);
+        } catch (PDOException $e) {
+            print "Erreur !: " . $e->getMessage();
+            die();
+        }
+    }
+
+    public function aDejaLaisseAvis($idUser, $idProd) {
+        try {
+            $req = 'SELECT count(*) FROM ecrire_avis WHERE idUser = ? AND idProd = ?';
+            $res = $this->executerRequete($req, [$idUser, $idProd]);
+            return $res->fetchColumn() > 0;
+        } catch (PDOException $e) {
+            print "Erreur !: " . $e->getMessage();
+            die();
+        }
+    }
+
+    public function ajouterAvisProduit($idUser, $idProd, $note, $description) {
+        try {
+            if ($this->aDejaLaisseAvis($idUser, $idProd)) {
+                return false;
+            }
+            $req = 'INSERT INTO ecrire_avis (idUser, idProd, note, date_avis, description) VALUES (?, ?, ?, NOW(), ?)';
+            $this->executerRequete($req, [$idUser, $idProd, $note, $description]);
+            return true;
+        } catch (PDOException $e) {
+            // Note: If idProd has a UNIQUE constraint globally, this will fail. We ignore and throw.
+            print "Erreur !: " . $e->getMessage();
+            die();
+        }
+    }
 }
 ?>
