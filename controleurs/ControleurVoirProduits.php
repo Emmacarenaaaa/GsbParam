@@ -28,9 +28,16 @@ class ControleurVoirProduits{
     if ($categ == null) {
         $categ = 'CH';
     }
-    $lesProduits = $this->modeleFront->getLesProduitsDeCategorie($categ);
+    $dispoOnly = isset($_GET['dispo_only']) && $_GET['dispo_only'] == '1';
+    $sort = isset($_GET['sort']) ? $_GET['sort'] : 'id_asc';
+    $prixMin = isset($_GET['prix_min']) && $_GET['prix_min'] !== '' ? floatval($_GET['prix_min']) : null;
+    $prixMax = isset($_GET['prix_max']) && $_GET['prix_max'] !== '' ? floatval($_GET['prix_max']) : null;
+    $marque = isset($_GET['marque']) && $_GET['marque'] !== '' ? intval($_GET['marque']) : null;
+
+    $lesProduits = $this->modeleFront->getLesProduitsDeCategorie($categ, $dispoOnly, $sort, $prixMin, $prixMax, $marque);
     $lesCategories = $this->modeleFront->getLesCategories();
     $infosCategorie = $this->modeleFront->getLesInfosCategorie($categ);
+    $lesMarques = $this->modeleFront->getLesMarques();
 
     $titreCategorie = "Produits de la catégorie :" . strtolower($infosCategorie->libelleCat);
 
@@ -40,8 +47,12 @@ class ControleurVoirProduits{
 public function voirTousLesProduits() {
     $dispoOnly = isset($_GET['dispo_only']) && $_GET['dispo_only'] == '1';
     $sort = isset($_GET['sort']) ? $_GET['sort'] : 'id_asc';
+    $prixMin = isset($_GET['prix_min']) && $_GET['prix_min'] !== '' ? floatval($_GET['prix_min']) : null;
+    $prixMax = isset($_GET['prix_max']) && $_GET['prix_max'] !== '' ? floatval($_GET['prix_max']) : null;
+    $marque = isset($_GET['marque']) && $_GET['marque'] !== '' ? intval($_GET['marque']) : null;
 
-    $lesProduits = $this->modeleFront->getTousLesProduitsFront($dispoOnly, $sort);
+    $lesMarques = $this->modeleFront->getLesMarques();
+    $lesProduits = $this->modeleFront->getTousLesProduitsFront($dispoOnly, $sort, $prixMin, $prixMax, $marque);
     $titreCategorie = "Tous les produits : ";
     include("vues/v_produits.php");
 }

@@ -16,7 +16,7 @@ function getAllInformationCompte($mail)
 
     try 
     {
-        $req = 'SELECT u.idUser, u.nomUser as nomCli, u.prenomUser as prenomCli, u.adresseMailUser as mail, l.motPasse as password FROM utilisateur u INNER JOIN login l ON u.idUser = l.idUser WHERE u.adresseMailUser = ? ;';
+        $req = 'SELECT u.idUser, u.nomUser as nomCli, u.prenomUser as prenomCli, u.adresseMailUser as mail, l.motPasse as password, u.adresseRueUser, u.villeUser, u.cpUser FROM utilisateur u INNER JOIN login l ON u.idUser = l.idUser WHERE u.adresseMailUser = ? ;';
         $params= [$mail];
         $res =$this->executerRequete($req, $params);
         $result = $res->fetch();

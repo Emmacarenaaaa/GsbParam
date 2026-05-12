@@ -4,35 +4,48 @@
 	<div class="cart-items-container">
 		<?php
 		$total = 0;
+		$produitsGroupes = [];
+		
+		// Regrouper les produits pour calculer les quantités
 		foreach ($lesProduitsDuPanier as $unProduit) {
+			$id = $unProduit->idProd;
+			if (isset($produitsGroupes[$id])) {
+				$produitsGroupes[$id]['quantite'] += 1;
+			} else {
+				$produitsGroupes[$id] = [
+					'produit' => $unProduit,
+					'quantite' => 1
+				];
+			}
+		}
+
+		foreach ($produitsGroupes as $item) {
+			$unProduit = $item['produit'];
+			$quantite = $item['quantite'];
 			$id = $unProduit->idProd;
 			$description = $unProduit->descriptionProd;
 			$image = $unProduit->imageProd;
 			$prix = $unProduit->prixProd;
-			$total += floatval($prix);
+			$total += floatval($prix) * $quantite;
 			?>
 			<div class="cart-item-card">
 				<div class="cart-item-img">
 					<img src="<?= $image ?>" alt="image descriptive" />
 				</div>
 				<div class="cart-item-info">
-					<div class="cart-item-brand">Klorane</div>
+					<div class="cart-item-brand">GsbParam</div>
 					<div class="cart-item-title"><?= $description ?></div>
-					<div class="cart-item-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus aliquam vene...</div>
+					<div class="cart-item-desc">Produit de notre gamme de parapharmacie.</div>
 					
 					<div class="cart-item-price-row">
-						<span class="cart-item-price"><?= $prix . "€" ?></span>
-						<span class="cart-item-volume">200 ml</span>
+						<span class="cart-item-price"><?= number_format(floatval($prix) * $quantite, 2, '.', '') . "€" ?></span>
+						<span class="cart-item-volume"><?= $prix ?> € à l'unité</span>
 					</div>
 					
 					<div class="cart-item-qty">
-						<label>Quantite :</label>
-						<select class="cart-select">
-							<option>1</option>
-							<option>2</option>
-							<option>3</option>
-							<option>4</option>
-							<option>5</option>
+						<label>Quantité :</label>
+						<select class="cart-select" disabled>
+							<option><?= $quantite ?></option>
 						</select>
 					</div>
 					

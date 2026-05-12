@@ -92,11 +92,37 @@ class ModeleFront extends Modele{
  * @return array $lesLignes un tableau des produits de la categ passée en paramètre (tableau d'objets)
 */
 
-	public function getLesProduitsDeCategorie($idCategorie)
+	public function getLesProduitsDeCategorie($idCategorie, $dispoOnly = false, $sort = 'id_asc', $prixMin = null, $prixMax = null, $marque = null)
 	{
 		try 
 		{
 	    $req='select * from produit where idCat ="'.$idCategorie.'"';
+        if ($dispoOnly) {
+            $req .= ' AND stockProd > 0';
+        }
+        if ($prixMin !== null) {
+            $req .= ' AND prixProd >= ' . floatval($prixMin);
+        }
+        if ($prixMax !== null) {
+            $req .= ' AND prixProd <= ' . floatval($prixMax);
+        }
+        if ($marque !== null) {
+            $req .= ' AND idMarque = ' . intval($marque);
+        }
+        
+        switch ($sort) {
+            case 'stock_asc':
+                $req .= ' ORDER BY stockProd ASC';
+                break;
+            case 'stock_desc':
+                $req .= ' ORDER BY stockProd DESC';
+                break;
+            case 'id_asc':
+            default:
+                $req .= ' ORDER BY idProd ASC';
+                break;
+        }
+
 		$res = $this->executerRequete($req);
 		$lesLignes = $res->fetchAll(PDO::FETCH_OBJ);
 		return $lesLignes; 
@@ -143,12 +169,21 @@ class ModeleFront extends Modele{
 		}
 	}
 	
-	public function getTousLesProduitsFront($dispoOnly = false, $sort = 'id_asc') {
+	public function getTousLesProduitsFront($dispoOnly = false, $sort = 'id_asc', $prixMin = null, $prixMax = null, $marque = null) {
         try {
-            $req = 'SELECT * FROM produit';
+            $req = 'SELECT * FROM produit WHERE 1=1';
             
             if ($dispoOnly) {
-                $req .= ' WHERE stockProd > 0';
+                $req .= ' AND stockProd > 0';
+            }
+            if ($prixMin !== null) {
+                $req .= ' AND prixProd >= ' . floatval($prixMin);
+            }
+            if ($prixMax !== null) {
+                $req .= ' AND prixProd <= ' . floatval($prixMax);
+            }
+            if ($marque !== null) {
+                $req .= ' AND idMarque = ' . intval($marque);
             }
             
             switch ($sort) {

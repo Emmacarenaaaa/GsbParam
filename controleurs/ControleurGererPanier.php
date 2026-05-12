@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Mission GsbParam PHP Objet
  * 
@@ -76,16 +76,15 @@ class ControleurGererPanier{
 	*/
 	function ajouterAuPanier($idProduit)
 	{
-		if(in_array($idProduit,$_SESSION['produits']))
-		{
-			$msgErreurs[]='Ce produit est déjà dans le panier.';
-			include("vues/v_erreurs.php");
-		}
-		else
-		{
-			$_SESSION['produits'][]= $idProduit; // l'indice n'est pas précisé : il sera automatiquement mis à la fin
-		}
-		$this->voirPanier();
+		$_SESSION['produits'][]= $idProduit; // l'indice n'est pas précisé : il sera automatiquement mis à la fin
+        $_SESSION['message_produit'] = "Le produit a bien été ajouté à votre panier !";
+        
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            header("Location: " . $_SERVER['HTTP_REFERER']);
+            exit();
+        } else {
+            $this->voirPanier();
+        }
 	}
 		
 /*
@@ -93,10 +92,12 @@ class ControleurGererPanier{
  */
 function supprimerProduitDuPanier($idProduit)
 {
-    if(($key = array_search($idProduit, $_SESSION['produits'])) !== false) {
-        unset($_SESSION['produits'][$key]);
-        $_SESSION['produits'] = array_values($_SESSION['produits']);
-    }
+    // On retire toutes les occurrences de ce produit dans le panier
+    $_SESSION['produits'] = array_filter($_SESSION['produits'], function($p) use ($idProduit) {
+        return $p !== $idProduit;
+    });
+    $_SESSION['produits'] = array_values($_SESSION['produits']);
+    
     $this->voirPanier();
 }
 
@@ -135,11 +136,24 @@ function supprimerProduitDuPanier($idProduit)
 	*/
 	function passerCommande()
 	{
+        if (!isset($_SESSION['mail'])) {
+            header("Location: index.php?uc=espaceClient");
+            exit();
+        }
+
 		$n=$this->nbProduitsDuPanier();
 			if($n>0)
-			{   // les variables suivantes servent à l'affectation des attributs value du formulaire
-				// ici le formulaire doit être vide, quand il est erroné, le formulaire sera réaffiché pré-rempli
-				$nom ='';$rue='';$ville ='';$cp='';$mail='';
+			{   
+                require_once 'modele/ModeleConnexion.php';
+                $modeleConnexion = new ModeleConnexion();
+                $infos = $modeleConnexion->getAllInformationCompte($_SESSION['mail']);
+                
+				$nom = $infos['nomCli'] . ' ' . $infos['prenomCli'];
+                $rue = $infos['adresseRueUser'];
+                $ville = $infos['villeUser'];
+                $cp = $infos['cpUser'];
+                $mail = $infos['mail'];
+
 				include ("vues/v_commande.php");
 			}
 			else
@@ -156,6 +170,11 @@ function supprimerProduitDuPanier($idProduit)
 	*/
 	function confirmerCommande()
 		{
+            if (!isset($_SESSION['mail'])) {
+                header("Location: index.php?uc=espaceClient");
+                exit();
+            }
+
 			$nom =$_REQUEST['nom'];$rue=$_REQUEST['rue'];$ville =$_REQUEST['ville'];$cp=$_REQUEST['cp'];$mail=$_REQUEST['mail'];
 			$msgErreurs = $this->getErreursSaisieCommande($nom,$rue,$ville,$cp,$mail);
 			if (count($msgErreurs)!=0)
@@ -166,7 +185,8 @@ function supprimerProduitDuPanier($idProduit)
 			else
 			{
 				$lesIdProduits = $this->getLesIdProduitsDuPanier();
-				$this->modeleFront->creerCommande($nom,$rue,$cp,$ville,$mail, $lesIdProduits );
+				// Utiliser l'email de la session pour garantir que la commande est liée au bon compte
+				$this->modeleFront->creerCommande($nom,$rue,$cp,$ville,$_SESSION['mail'], $lesIdProduits );
 				$message = "La commande a été enregistrée. Merci de votre visite.";
 				$this->supprimerPanier();
 				include ("vues/v_message.php");
